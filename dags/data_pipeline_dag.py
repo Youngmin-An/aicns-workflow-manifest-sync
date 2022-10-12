@@ -89,7 +89,7 @@ with DAG(
         namespace="default",
         application_name=f"{{{{ task_instance.xcom_pull(task_ids='{validate_task_id}')['metadata']['name'] }}}}",
     )
-
+    """
     analyze_regularity_task_id = "analyze_regularity_" + feature_id
     analyze_regularity = SparkKubernetesOperator(
         task_id=analyze_regularity_task_id,
@@ -125,5 +125,6 @@ with DAG(
         namespace="default",
         application_name=f"{{{{ task_instance.xcom_pull(task_ids='{clean_data_task_id}')['metadata']['name'] }}}}",
     )
-
+    """
+    
     validate_data >> validate_data_sensor
