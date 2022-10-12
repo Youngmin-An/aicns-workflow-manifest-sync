@@ -77,9 +77,9 @@ with DAG(
         task_id=validate_task_id,
         application_file=build_sparkapplication_template(
             template_file_name="sparkapplication-template.yaml",
-            app_name=f"aicns-validate-data-task-{feature_id}",
+            app_name=f"aicns-data-validation-task-{feature_id}",
             feature_id=feature_id,
-            image_tag="youngminan/aicns-validate-data-task:latest",
+            image_tag="youngminan/aicns-data-validation-task:latest",
             script_name="data_validator.py",
         ),
         namespace="default",
