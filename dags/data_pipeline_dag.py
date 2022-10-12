@@ -22,12 +22,14 @@ def build_sparkapplication_template(
     feature_id: str,
     image_tag: str,
     script_name: str,
+    start_days_delta: int = 0
 ) -> str:
     """
     Build sparkapplication manifest template for submitting to 'spark-on-k8s-operator'
     :param template_file_name: sparkapplication manifest template file name in 'templates' folder
     :param app_name: Spark Application name that will be a prefix of spark-submit
     :param feature_id: feature id that is unique metadata in AICNS project
+    :param start_days_delta: Non-negative integer to subtract from data_interval_start macro, default is 0
     :return: Rendered template string for spark-submit to 'spark-on-k8s-operator'
     """
     templates_dir = os.path.join(
@@ -38,7 +40,7 @@ def build_sparkapplication_template(
     template = env.get_template(template_file_name)
     spark_app = {
         "name": app_name + "-{{ run_id.split('T')[0]|replace('__', '-') }}",
-        "start": "{{ data_interval_start }}",
+        "start": "{{ data_interval_start - macros.timedelta(days=start_days_delta) }}",
         "end": "{{ data_interval_end }}",
         "feature_id": feature_id,
         "image_tag": image_tag,
@@ -99,6 +101,7 @@ with DAG(
             feature_id=feature_id,
             image_tag="youngminan/aicns-regularity-analysis-task:latest",
             script_name="regularity_analyzer.py",
+            start_days_delta=60-1
         ),
         namespace="default",
     )
