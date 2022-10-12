@@ -1,0 +1,66 @@
+apiVersion: "sparkoperator.k8s.io/v1beta2"
+kind: SparkApplication
+metadata:
+  name: {{ spark_app.name }}
+  #namespace: default
+spec:
+  type: Python
+  pythonVersion: "3"
+  mode: cluster
+  image: {{ spark_app.image_tag }}
+  imagePullPolicy: Always
+  imagePullSecrets:
+    - docker-regcred
+  mainApplicationFile: local:///opt/spark/{{ spark_app.script_name }}
+  sparkConfigMap: pyspark-test-spark-configmap
+
+  deps:
+    pyFiles:
+      - local:///opt/spark/func.py
+  sparkVersion: "3.1.1"
+  restartPolicy:
+    type: Never
+    #    onFailureRetries: 0
+    #onFailureRetryInterval: 0
+    #onSubmissionFailureRetries: 0
+    #onSubmissionFailureRetryInterval: 0
+  driver:
+    cores: 1
+    coreLimit: "1200m"
+    memory: "2G"
+    env:
+      - name: APP_TIME_START
+        value: {{ spark_app.start }}
+      - name: APP_TIME_END
+        value: {{ spark_app.end }}
+      - name: FEATURE_ID
+        value: "2"
+      - name: SPARK_EXTRA_CONF_PATH
+        value: "/etc/spark/conf/spark-extra.conf"
+    envFrom:
+      - configMapRef:
+          name: pyspark-pi-test-envs
+    labels:
+      version: 3.1.1
+    serviceAccount: spark
+    podSecurityContext:
+      runAsUser: 0
+      runAsGroup: 0
+    securityContext:
+      runAsUser: 0
+      runAsGroup: 0
+      privileged: true
+      allowPrivilegeEscalation: true
+  executor:
+    cores: 4
+    instances: 3
+    memory: "2G"
+    podSecurityContext:
+      runAsUser: 0
+    securityContext:
+      runAsUser: 0
+      runAsGroup: 0
+      privileged: true
+      allowPrivilegeEscalation: true
+    labels:
+      version: 3.1.1
