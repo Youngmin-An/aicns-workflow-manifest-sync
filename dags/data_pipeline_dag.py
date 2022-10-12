@@ -126,11 +126,4 @@ with DAG(
         application_name=f"{{{{ task_instance.xcom_pull(task_ids='{clean_data_task_id}')['metadata']['name'] }}}}",
     )
 
-    (
-        validate_data
-        >> validate_data_sensor
-        >> analyze_regularity
-        >> analyze_regularity_sensor
-        >> clean_data
-        >> clean_data_sensor
-    )
+    validate_data >> validate_data_sensor
