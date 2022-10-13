@@ -22,14 +22,14 @@ def build_sparkapplication_template(
     feature_id: str,
     image_tag: str,
     script_name: str,
-    start: str
+    start_days_delta: int=0
 ) -> str:
     """
     Build sparkapplication manifest template for submitting to 'spark-on-k8s-operator'
     :param template_file_name: sparkapplication manifest template file name in 'templates' folder
     :param app_name: Spark Application name that will be a prefix of spark-submit
     :param feature_id: feature id that is unique metadata in AICNS project
-    :param start: Jinja template or start datetime foramt
+    :param start_days_delta: Non-positive integer for subtraction from ds to calc start date
     :return: Rendered template string for spark-submit to 'spark-on-k8s-operator'
     """
     templates_dir = os.path.join(
@@ -82,8 +82,7 @@ with DAG(
             app_name=f"aicns-data-validation-task-{feature_id}",
             feature_id=feature_id,
             image_tag="youngminan/aicns-data-validation-task:latest",
-            script_name="data_validator.py",
-            start = "{{ data_interval_start }}"
+            script_name="data_validator.py"
         ),
         namespace="default",
     )
@@ -121,7 +120,7 @@ with DAG(
             feature_id=feature_id,
             image_tag="youngminan/aicns-data-cleaning-task:latest",
             script_name="data_cleaner.py",
-            start="{{ data_interval_start - macros.timedelta(days=59) }}"
+            start_days_delta=0
         ),
         namespace="default",
     )
