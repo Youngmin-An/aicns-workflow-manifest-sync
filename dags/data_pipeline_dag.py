@@ -40,7 +40,7 @@ def build_sparkapplication_template(
     template = env.get_template(template_file_name)
     spark_app = {
         "name": app_name + "-{{ run_id.split('T')[0]|replace('__', '-') }}",
-        "start": "{{ data_interval_start }}" - pendulum.duration(days=start_days_delta),
+        "start": pendulum.parse("{{ data_interval_start }}") - pendulum.duration(days=start_days_delta),
         "end": "{{ data_interval_end }}",
         "feature_id": feature_id,
         "image_tag": image_tag,
